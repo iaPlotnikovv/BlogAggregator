@@ -7,7 +7,7 @@ import (
 
 func Write(cfg *Config) error {
 
-	cfg.SetUser()
+	//cfg.SetUser()
 	data, err := json.Marshal(cfg)
 	if err != nil {
 		return err

@@ -2,23 +2,8 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 )
-
-const (
-	file_name = "/.gatorconfig.json"
-)
-
-func GetConfigFilePath() (string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	return home + file_name, nil
-
-}
 
 func Read() (*Config, error) {
 
@@ -39,7 +24,7 @@ func Read() (*Config, error) {
 		return nil, err
 	}
 
-	fmt.Println(cfg)
+	//fmt.Println(cfg)
 
 	return &cfg, nil
 }
