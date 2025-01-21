@@ -1,22 +1,38 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"os"
 
 	"github.com/iaPlotnikovv/BlogAggregator/internal/app"
+	"github.com/iaPlotnikovv/BlogAggregator/internal/database"
+	_ "github.com/lib/pq"
+)
+
+const (
+	dbURL = "postgres://iplotnikow:@localhost:5432/gator?sslmode=disable"
 )
 
 func main() {
 
-	state := app.StateInit()
+	db, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		log.Fatal("error in db connection")
+	}
+	dbQueries := database.New(db)
+
+	state := app.StateInit(dbQueries)
 
 	cmd := app.CmdListInit()
 
-	cmd.Register("login", app.HandlerLogin)
 	cmd.Register("help", cmd.Help)
+	cmd.Register("config", app.ConfigChecker)
+	cmd.Register("login", app.HandlerLogin)
+	cmd.Register("register", app.HandlerRegister)
 
 	input := os.Args
+
 	if len(input) < 2 {
 		log.Fatal("Error! Unknown command. Use <gator help>")
 	}
