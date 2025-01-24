@@ -39,12 +39,12 @@ func HandlerLogin(s *state, cmd command) error {
 
 	arg, err := ArgsChecker(cmd)
 	if err != nil {
-		log.Fatal(err)
+		handleError(err)
 	}
 	if exist, err := s.db.ExistsUser(context.Background(), arg); err != nil {
-		log.Fatal(err)
+		handleError(err)
 	} else if !exist {
-		log.Fatal("User doesn't exist!")
+		handleError(fmt.Errorf("user doesn't exist"))
 		//	os.Exit(1)
 	}
 
@@ -87,14 +87,43 @@ func HandlerRegister(s *state, cmd command) error {
 
 func ConfigChecker(s *state, cmd command) error {
 	if len(cmd.arg) != 0 {
-		log.Fatal("Invalid use of command!")
+		handleError(fmt.Errorf("invalid use of command"))
 	}
 
 	fmt.Printf("\nThe current state:\n")
 	current, err := config.Read()
 	if err != nil {
-		return err
+		handleError(err)
 	}
 	fmt.Println(current)
+	return nil
+}
+
+func HandlerReset(s *state, cmd command) error {
+
+	if len(cmd.arg) != 0 {
+		handleError(fmt.Errorf("\n expects a single argument"))
+	}
+	err := s.db.ResetUsers(context.Background())
+	if err != nil {
+		handleError(err)
+	}
+	fmt.Println("\nUsers are succssesfully reset!")
+	return nil
+}
+
+func HandlerUsers(s *state, cmd command) error {
+	users, err := s.db.GetUsers(context.Background())
+	if err != nil {
+		handleError(err)
+	}
+	for _, v := range users {
+		if v == s.cfg.Current_user_name {
+			fmt.Printf("\n* %s (current)\n", v)
+		} else {
+			fmt.Printf("\n* %s\n", v)
+		}
+	}
+
 	return nil
 }

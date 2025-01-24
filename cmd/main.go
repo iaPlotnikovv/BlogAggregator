@@ -30,6 +30,8 @@ func main() {
 	cmd.Register("config", app.ConfigChecker)
 	cmd.Register("login", app.HandlerLogin)
 	cmd.Register("register", app.HandlerRegister)
+	cmd.Register("reset", app.HandlerReset)
+	cmd.Register("users", app.HandlerUsers)
 
 	input := os.Args
 
