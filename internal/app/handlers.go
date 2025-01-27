@@ -127,3 +127,17 @@ func HandlerUsers(s *state, cmd command) error {
 
 	return nil
 }
+
+func HandlerAgg(s *state, cmd command) error {
+	arg, err := ArgsChecker(cmd)
+	if err != nil {
+		handleError(err)
+	}
+	//	arg := "https://www.wagslane.dev/index.xml"
+	feed, err := fetchFeed(context.Background(), arg)
+	if err != nil {
+		handleError(err)
+	}
+	fmt.Println(feed)
+	return nil
+}

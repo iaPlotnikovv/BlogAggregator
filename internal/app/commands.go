@@ -5,6 +5,16 @@ import (
 	"log"
 )
 
+func AddCommands(cmd *commands) {
+	cmd.Register("help", cmd.Help)
+	cmd.Register("config", ConfigChecker)
+	cmd.Register("login", HandlerLogin)
+	cmd.Register("register", HandlerRegister)
+	cmd.Register("reset", HandlerReset)
+	cmd.Register("users", HandlerUsers)
+	cmd.Register("agg", HandlerAgg)
+}
+
 type cmdHandler func(*state, command) error
 
 type commands struct {

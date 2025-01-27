@@ -26,12 +26,7 @@ func main() {
 
 	cmd := app.CmdListInit()
 
-	cmd.Register("help", cmd.Help)
-	cmd.Register("config", app.ConfigChecker)
-	cmd.Register("login", app.HandlerLogin)
-	cmd.Register("register", app.HandlerRegister)
-	cmd.Register("reset", app.HandlerReset)
-	cmd.Register("users", app.HandlerUsers)
+	app.AddCommands(cmd)
 
 	input := os.Args
 
