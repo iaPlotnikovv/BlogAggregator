@@ -13,6 +13,8 @@ func AddCommands(cmd *commands) {
 	cmd.Register("reset", HandlerReset)
 	cmd.Register("users", HandlerUsers)
 	cmd.Register("agg", HandlerAgg)
+	cmd.Register("addfeed", HandlerAddFeed)
+	cmd.Register("feeds", HandlerListFeeds)
 }
 
 type cmdHandler func(*state, command) error

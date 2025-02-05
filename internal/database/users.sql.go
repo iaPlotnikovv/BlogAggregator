@@ -7,36 +7,26 @@ package database
 
 import (
 	"context"
-	"time"
 
 	"github.com/google/uuid"
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, created_at, updated_at, name)
+INSERT INTO users (id, name)
 VALUES (
     $1,
-    $2,
-    $3,
-    $4
+    $2
 )
 RETURNING id, name, created_at, updated_at
 `
 
 type CreateUserParams struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Name      string
+	ID   uuid.UUID
+	Name string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser,
-		arg.ID,
-		arg.CreatedAt,
-		arg.UpdatedAt,
-		arg.Name,
-	)
+	row := q.db.QueryRowContext(ctx, createUser, arg.ID, arg.Name)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -56,6 +46,17 @@ func (q *Queries) ExistsUser(ctx context.Context, name string) (bool, error) {
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
+}
+
+const getCurrentUserID = `-- name: GetCurrentUserID :one
+SELECT id FROM users WHERE name = $1
+`
+
+func (q *Queries) GetCurrentUserID(ctx context.Context, name string) (uuid.UUID, error) {
+	row := q.db.QueryRowContext(ctx, getCurrentUserID, name)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getUsers = `-- name: GetUsers :many

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/iaPlotnikovv/BlogAggregator/internal/config"
@@ -68,10 +67,8 @@ func HandlerRegister(s *state, cmd command) error {
 	}
 
 	data := database.CreateUserParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		Name:      arg,
+		ID:   uuid.New(),
+		Name: arg,
 	}
 
 	user, err := s.db.CreateUser(context.Background(), data)
@@ -140,4 +137,44 @@ func HandlerAgg(s *state, cmd command) error {
 	}
 	fmt.Println(feed)
 	return nil
+}
+
+func HandlerAddFeed(s *state, cmd command) error {
+	if len(cmd.arg) != 2 {
+		handleError(errors.New("expects !two! arguments"))
+	}
+	var username = s.cfg.Current_user_name
+
+	user_id, err := s.db.GetCurrentUserID(context.Background(), username)
+	if err != nil {
+		handleError(err)
+	}
+
+	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
+		ID:     uuid.New(),
+		UserID: user_id,
+		Name:   cmd.arg[0],
+		Url:    cmd.arg[1],
+	})
+	if err != nil {
+		handleError(err)
+	}
+	fmt.Println(feed)
+	return nil
+}
+
+func HandlerListFeeds(s *state, cmd command) error {
+	if len(cmd.arg) > 1 {
+		handleError(errors.New("invalid usage of command"))
+	}
+	feed, err := s.db.ListFeed(context.Background())
+	if err != nil {
+		handleError(err)
+	}
+
+	for _, v := range feed {
+		fmt.Println(v)
+	}
+	return nil
+
 }
